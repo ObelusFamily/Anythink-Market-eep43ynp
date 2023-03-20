@@ -50,7 +50,18 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
                 description=description,
                 body=body,
                 seller_username=seller.username,
-                image=image
+                if image:
+                    image=image
+                else:
+                    try:
+                        response = openai.Image.create(
+                        prompt=title,
+                        n=1,
+                        size="256x256"
+                        )
+                        image = response['data'][0]['url']
+                    except:
+                        print("Cant handle erquest to OpenAI")
             )
 
             if tags:

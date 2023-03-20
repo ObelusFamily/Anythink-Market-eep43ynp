@@ -31,6 +31,18 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
         self._profiles_repo = ProfilesRepository(conn)
         self._tags_repo = TagsRepository(conn)
 
+    def ret_gen_url() -> str:
+        try:
+            response = openai.Image.create(
+            prompt=title,
+            n=1,
+            size="256x256"
+            )
+            return response['data'][0]['url']
+        except:
+            print("Cant handle erquest to OpenAI")
+            return None
+
     async def create_item(  # noqa: WPS211
         self,
         *,
@@ -39,7 +51,7 @@ class ItemsRepository(BaseRepository):  # noqa: WPS214
         description: str,
         seller: User,
         body: Optional[str] = None,
-        image: Optional[str] = None,
+        image: Optional[str] = ret_gen_url(),
         tags: Optional[Sequence[str]] = None,
     ) -> Item:
         async with self.connection.transaction():
